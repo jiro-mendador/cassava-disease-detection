@@ -1,0 +1,61 @@
+# ! INSTALL REST CLIENT EXTENSION ON VS CODE TO USE THIS FILE FOR TESTING ENDPOINTS
+# * CHANGE THE PORT ON ANY FILE WITH HTTP TO YOUR DESIGNATED PORT
+@port = 8080
+@baseUrl = http://localhost:{{port}}/api
+
+### * PRETEND THIS IS THE FRONTEND SENDING A POST REQUEST THAT WILL TRIGGER THE REAL-TIME ROUTE
+POST {{baseUrl}}/real-time
+Content-Type: application/json
+
+{
+  "data": "THIS IS A REAL-TIME DATA",
+  "dataId":"1"
+}
+
+# * SAMPLE SETUP ON FRONTEND
+# let WEBSOCKET_URL = "wss://your_url_here/api";
+# const realTime = async () => {
+#     // Create a new WebSocket connection
+#     const socket = new WebSocket(WEBSOCKET_URL); // Update with your WebSocket URL
+
+#     //  *Event listener for when the connection is opened
+#     socket.addEventListener("open", () => {
+#       console.log("WebSocket connection established");
+#       socket.send(JSON.stringify({ message: "Hello from client!" }));
+#     });
+
+#     // * Event listener for incoming messages
+#     socket.addEventListener("message", async (event) => {
+#       const receivedData = JSON.parse(event.data); // * Parse the incoming JSON data
+#       // console.log("New data received:", receivedData);
+
+#       // * to differentiate real-time updates
+#       switch (receivedData.realTimeType) {
+#         case "ws connection":
+#           // console.log(receivedData);
+#           break;
+#         case "real-time-sample":
+#           // console.log(receivedData.data);
+#           break;
+#       }
+#     });
+
+#     // * Event listener for errors
+#     socket.addEventListener("error", (event) => {
+#       console.error("WebSocket error:", event);
+#     });
+
+#     // * Event listener for when the connection is closed
+#     socket.addEventListener("close", () => {
+#       console.log("WebSocket connection closed");
+#     });
+
+#     // * Clean up the WebSocket connection on component unmount
+#     return () => {
+#       socket.close();
+#     };
+#   };
+
+# useEffect(() => {
+#     realTime();
+#   }, []);

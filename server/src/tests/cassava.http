@@ -1,0 +1,34 @@
+### * CASSAVA API TESTS ###
+
+@port = 8080
+@baseUrl = http://localhost:{{port}}/api
+
+### * Add Cassava Detection Record
+POST {{baseUrl}}/cassava
+Content-Type: application/json
+
+{
+  "detectedType": "Healthy",
+  "actualType": "Diseased",
+  "image": "http://example.com/uploads/cassava-leaf.jpg",
+  "user": "68c0b3d5de96e64d24ef7c24"
+}
+
+### * Get All Cassava Records (with filters & pagination)
+GET {{baseUrl}}/cassava?page=1&limit=10&detectedType=Healthy&actualType=Diseased
+
+### * Get One Cassava Record
+GET {{baseUrl}}/cassava/68c0b3f9de96e64d24ef7c26
+
+### * Update Cassava Record
+PUT {{baseUrl}}/cassava/68c0b3f9de96e64d24ef7c26
+Content-Type: application/json
+
+{
+  "detectedType": "Diseased",
+  "actualType": "Diseased",
+  "image": "http://example.com/uploads/cassava-leaf-updated.jpg"
+}
+
+### * Delete Cassava Record
+DELETE {{baseUrl}}/cassava/68c0bae59caa63dbb4bd6055

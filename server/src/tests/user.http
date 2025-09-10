@@ -1,0 +1,68 @@
+# ! INSTALL REST CLIENT EXTENSION ON VS CODE TO USE THIS FILE FOR TESTING ENDPOINTS
+# * CHANGE THE PORT ON ANY FILE WITH HTTP TO YOUR DESIGNATED PORT
+@port = 8080
+@baseUrl = http://localhost:{{port}}/api
+
+### * Get All Users (WITH PAGINATIONS AND SOME FILTER FOR role status)
+GET {{baseUrl}}/users?page=1&limit=10&status=pending&role=user
+
+### * Get User by ID
+GET {{baseUrl}}/users/682a10ebf6153e49e2ada124
+
+### * Register User (user)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "user",
+  "email": "user@gmail.com",
+  "password": "User12345/123"
+}
+
+### * Register User (staff)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "staff",
+  "email": "staff@gmail.com",
+  "password": "Staff12345/123",
+  "role": "staff",
+  "status": "pending"
+}
+
+### * Register User (admin)
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "admin",
+  "email": "admin@gmail.com",
+  "password": "Admin12345/123",
+  "role": "admin",
+  "status": "active"
+}
+
+### * Login
+POST {{baseUrl}}/users/login
+Content-Type: application/json
+
+{
+  "email": "user@gmail.com",
+  "password": "123"
+}
+
+### * Update User
+PUT {{baseUrl}}/users/684f1591392385a6bcaba786
+Content-Type: application/json
+
+{
+  "name": "admin updated",
+  "email": "admin@gmail.com",
+  "password": "Admin12345/123",
+  "role": "admin",
+  "status": "active"
+}
+
+### * Delete User
+DELETE {{baseUrl}}/users/684f1527ef66547ba2c191ea
