@@ -1,0 +1,7 @@
+# to run with usb debugging on and phone connected on pc via cable, run this first on cmd:
+adb reverse tcp:8081 tcp:8081
+
+# download expo go first on phone
+
+# run this command on vs code or any editor terminal:
+npx expo start --host=localhost

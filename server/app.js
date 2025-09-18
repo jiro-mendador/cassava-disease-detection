@@ -8,6 +8,7 @@ import { realTimeRoutes } from "./src/routes/realtimeRoutes.js";
 // * FOR REAL-TIME UPDATES
 import { WebSocketServer } from "ws";
 import { cassavaRoutes } from "./src/routes/cassavaRoutes.js";
+import { detect } from "./src/controllers/cassavaDetection.js";
 
 // ! FOR WEB HOSTING
 // import path from "path";
@@ -58,6 +59,7 @@ app.use("/api/files", express.static("./public/files"));
 app.use("/api/users", userRoutes);
 app.use("/api/real-time", realTimeRoutes);
 app.use("/api/cassava", cassavaRoutes);
+app.get("/api/detect", detect);
 
 // ! TO RENDER FRONTEND ON WEB HOSTING
 // app.use(express.static(path.join(__dirname, "/fe/build/")));

@@ -14,6 +14,9 @@ Content-Type: application/json
   "user": "68c0b3d5de96e64d24ef7c24"
 }
 
+### * DETECTION
+GET {{baseUrl}}/detect
+
 ### * Get All Cassava Records (with filters & pagination)
 GET {{baseUrl}}/cassava?page=1&limit=10&detectedType=Healthy&actualType=Diseased
 
