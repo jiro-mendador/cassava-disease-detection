@@ -12,13 +12,16 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../global.css";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "react-native";
+import { UsersProvider } from "@/hooks/useUser";
 
 export default function Layout() {
   return (
     <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
         <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-        <Stack screenOptions={{ headerShown: false }} />
+        <UsersProvider>
+          <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
+        </UsersProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

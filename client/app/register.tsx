@@ -10,9 +10,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { TextInput } from "react-native-gesture-handler";
 import { useState } from "react";
 import { router } from "expo-router";
+import { useUsers } from "@/hooks/useUser";
+import api from "@/services/api";
+import axios from "axios";
+import { delayExecute } from "@/helpers/delayExecute";
+import { clearFields } from "@/helpers/clearFields";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { registerUser } = useUsers();
 
   const [userInput, setUserInput] = useState({
     firstName: "",
@@ -20,6 +26,15 @@ const Register = () => {
     email: "",
     password: "",
   });
+
+  const clearFields = () => {
+    setUserInput({
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    });
+  };
 
   const handleInputChange = (field: keyof typeof userInput, value: string) => {
     setUserInput((prev) => ({
@@ -32,8 +47,13 @@ const Register = () => {
     router.replace("/login");
   };
 
-  const onRegisterClick = () => {
-    router.replace("/login");
+  const onRegisterClick = async () => {
+    const response = await registerUser(userInput);
+    if (response) {
+      alert("User Registered Successfully!");
+      clearFields();
+      delayExecute(() => router.replace("/login"), 1000);
+    }
   };
 
   return (

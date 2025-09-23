@@ -127,7 +127,7 @@ const Home = () => {
           </View>
         </ScrollView>
       </View>
-      <Nav />
+      <Nav currentScreen="home" />
     </SafeAreaView>
   );
 };

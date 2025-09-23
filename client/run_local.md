@@ -5,3 +5,6 @@ adb reverse tcp:8081 tcp:8081
 
 # run this command on vs code or any editor terminal:
 npx expo start --host=localhost
+
+# run this command on vs code or any editor terminal:
+npx expo start --localhost --android

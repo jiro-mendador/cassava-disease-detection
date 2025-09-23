@@ -3,11 +3,16 @@ import { ImageBackground, Pressable, Text, View } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import { useEffect } from "react";
 
 const Index = () => {
+  // useEffect(() => {
+  //   router.replace("/user/profile");
+  // }, [1000]);
+
   const onStartClick = () => {
-    // router.push("/login");
-    router.replace("/login");
+    // router.replace("/user/profile");
+    router.push("/login");
   };
 
   return (

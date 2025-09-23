@@ -6,7 +6,7 @@ export default function SampleSectionLayout() {
   return (
     <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

@@ -8,11 +8,26 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { TextInput } from "react-native-gesture-handler";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { router } from "expo-router";
+import { delayExecute } from "@/helpers/delayExecute";
+import { useUsers } from "@/hooks/useUser";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { loginUser, currentUser, getCurrentUserDataInLocalStorage } =
+    useUsers();
+
+  useEffect(() => {
+    const getData = async () => {
+      await getCurrentUserDataInLocalStorage();
+    };
+    getData();
+
+    if (currentUser) {
+      router.replace("/user/home");
+    }
+  });
 
   const [userInput, setUserInput] = useState({
     email: "",
@@ -26,8 +41,12 @@ const Login = () => {
     }));
   };
 
-  const onLoginClick = () => {
-    router.replace("/user/home");
+  const onLoginClick = async () => {
+    const response = await loginUser(userInput);
+    if (response) {
+      alert("Logged in successfully!");
+      delayExecute(() => router.replace("/user/home"), 1000);
+    }
   };
 
   const onRegisterClick = () => {
