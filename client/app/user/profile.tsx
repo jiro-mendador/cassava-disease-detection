@@ -12,7 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
-import { useUsers } from "@/hooks/useUser";
+import { useUsers } from "@/hooks/useUsers";
 
 const Profile = () => {
   const [showPassword, setShowPassword] = useState(false);

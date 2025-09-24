@@ -11,8 +11,8 @@ const Index = () => {
   // }, [1000]);
 
   const onStartClick = () => {
-    // router.replace("/user/profile");
-    router.push("/login");
+    // router.push("/login");
+    router.replace("/user/detect");
   };
 
   return (

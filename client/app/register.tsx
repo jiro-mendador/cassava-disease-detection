@@ -10,7 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { TextInput } from "react-native-gesture-handler";
 import { useState } from "react";
 import { router } from "expo-router";
-import { useUsers } from "@/hooks/useUser";
+import { useUsers } from "@/hooks/useUsers";
 import api from "@/services/api";
 import axios from "axios";
 import { delayExecute } from "@/helpers/delayExecute";

@@ -7,6 +7,7 @@ import {
   View,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import {
   Ionicons,
@@ -18,12 +19,29 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { TextInput } from "react-native-gesture-handler";
 import { useFocusEffect } from "@react-navigation/native";
 import { usePathname } from "expo-router";
+import { getDateFormatted } from "@/helpers/getDateFormatted";
+import api from "@/services/api";
+import FullScreenImagePreview from "@/components/fullScreenImagePreview";
+import { useCassavas } from "@/hooks/useCassavas";
+import { useUsers } from "@/hooks/useUsers";
 
 const Detect = () => {
   const [permission, requestPermission] = useCameraPermissions();
   const [cameraOpen, setCameraOpen] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
   const cameraRef = useRef<null>(null);
+  const [loading, setLoading] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false);
+
+  // * hooks
+  const { saveCassavaDetection } = useCassavas();
+  const { currentUser } = useUsers();
+
+  const configs = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
 
   const [detectionDetails, setDetectionDetails] = useState({
     detectedType: "N/A",
@@ -62,10 +80,123 @@ const Detect = () => {
     return <NoCameraPermissions />;
   }
 
+  // const takePicture = async () => {
+  //   if (cameraRef.current) {
+  //     const result = await cameraRef.current.takePictureAsync();
+
+  //     // * build the date object to send to backend
+  //     const formData = new FormData();
+  //     formData.append("image", {
+  //       uri: result.uri, // * file URI
+  //       type: "image/jpeg", // * mime type
+  //       name: "detectCassava.jpg", // * file name
+  //     } as any);
+
+  //     const configs = {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     };
+
+  //     // * after taking picture, send to backend for identification
+  //     const response = await api.post("/cassava/detect", formData, configs);
+
+  //     if (response.data.success) {
+  //       const responseData = response.data.data;
+  //       console.log(responseData);
+
+  //       // * get date now
+  //       const isoDateNow = new Date(Date.now()).toISOString();
+
+  //       // * update the state
+  //       setDetectionDetails((prevData) => {
+  //         return {
+  //           ...prevData,
+  //           detectedType: responseData.top,
+  //           date: getDateFormatted(isoDateNow),
+  //         };
+  //       });
+  //     } else {
+  //       // * update the state
+  //       setDetectionDetails({
+  //         detectedType: "Can't detect right now...",
+  //         actualType: "N/A",
+  //         date: getDateFormatted(isoDateNow),
+  //       });
+  //     }
+
+  //     setPhoto(result.uri);
+  //     setCameraOpen(false);
+  //   }
+  // };
+
+  const saveDetection = async () => {
+    if (!photo) {
+      alert("No photo to save!");
+      return;
+    }
+
+    const formData = new FormData();
+
+    // * Add the image file
+    formData.append("image", {
+      uri: photo,
+      type: "image/jpeg",
+      name: `detectCassava.jpg`,
+    } as any);
+
+    // * Add other detection details
+    formData.append("detectedType", detectionDetails.detectedType);
+    formData.append("actualType", detectionDetails.actualType);
+    formData.append("date", detectionDetails.date);
+    formData.append("user", currentUser._id);
+
+    // * Call your context method
+    const response = await saveCassavaDetection(formData, configs);
+
+    if (response) {
+      console.log("Save Detection Response:", response);
+      alert(response.message);
+    }
+
+    resetState();
+  };
+
   const takePicture = async () => {
     if (cameraRef.current) {
       const result = await cameraRef.current.takePictureAsync();
-      setPhoto(result.uri);
+
+      const formData = new FormData();
+      formData.append("image", {
+        uri: result.uri,
+        type: "image/jpeg",
+        name: "detectCassava.jpg",
+      } as any);
+
+      setLoading(true);
+
+      const response = await api.post("/cassava/detect", formData, configs);
+
+      const isoDateNow = new Date().toISOString();
+
+      if (response.data.success) {
+        const responseData = response.data.data;
+        setDetectionDetails((prevData) => ({
+          ...prevData,
+          detectedType: responseData.top,
+          date: getDateFormatted(isoDateNow),
+        }));
+        setPhoto(result.uri);
+      } else {
+        resetState();
+        setDetectionDetails({
+          detectedType: "Can't detect right now...",
+          actualType: "N/A",
+          date: getDateFormatted(isoDateNow),
+        });
+      }
+
+      setLoading(false);
       setCameraOpen(false);
     }
   };
@@ -78,7 +209,17 @@ const Detect = () => {
       actualType: "N/A",
       date: "N/A",
     });
+    setLoading(false);
   };
+
+  const LoadingOverlay = () => (
+    <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/75 flex items-center justify-center z-50">
+      <ActivityIndicator size="large" color="#bded30" />
+      <Text className="text-white text-lg font-semibold mt-4">
+        Identifying cassava health...
+      </Text>
+    </View>
+  );
 
   const OpenCameraComponent = () => {
     return (
@@ -113,7 +254,10 @@ const Detect = () => {
           Take A Picture Of Your Cassava
         </Text>
         {/* Show preview */}
-        <View className="mt-12 items-center">
+        <TouchableOpacity
+          className="mt-12 items-center"
+          onPress={() => setPreviewVisible(photo !== null)}
+        >
           {photo !== null ? (
             <>
               <Image
@@ -126,7 +270,7 @@ const Detect = () => {
               <Ionicons name="image-outline" size={250} color="#1e1e1e" />
             </View>
           )}
-        </View>
+        </TouchableOpacity>
         {/* open camera button */}
         <View className="flex flex-row justify-between items-center mt-6">
           <View>
@@ -134,7 +278,7 @@ const Detect = () => {
               disabled={photo === null}
               style={{ borderColor: photo === null ? "#9ca3af" : "#bded30" }}
               className="border border-[#bded30] rounded-xl px-4 py-2 flex flex-row justify-center items-center gap-4"
-              onPress={() => setCameraOpen(true)}
+              onPress={saveDetection}
             >
               <Ionicons
                 name="save"
@@ -222,6 +366,14 @@ const Detect = () => {
       {cameraOpen ? <OpenCameraComponent /> : <ViewCameraOutputComponent />}
 
       {!cameraOpen && <Nav currentScreen="detect" />}
+
+      <FullScreenImagePreview
+        visible={previewVisible}
+        imageUri={photo}
+        onClose={() => setPreviewVisible(false)}
+      />
+
+      {loading && <LoadingOverlay />}
     </SafeAreaView>
   );
 };

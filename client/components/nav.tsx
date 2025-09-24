@@ -1,7 +1,7 @@
 import { Link } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useUsers } from "@/hooks/useUser";
+import { useUsers } from "@/hooks/useUsers";
 
 const Nav = ({ currentScreen = "home" }) => {
   const { deleteUserDataInLocalStorage } = useUsers();

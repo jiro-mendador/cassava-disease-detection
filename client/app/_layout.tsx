@@ -12,7 +12,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../global.css";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "react-native";
-import { UsersProvider } from "@/hooks/useUser";
+import { UsersProvider } from "@/hooks/useUsers";
+import { CassavasProvider } from "@/hooks/useCassavas";
 
 export default function Layout() {
   return (
@@ -20,7 +21,9 @@ export default function Layout() {
       <SafeAreaProvider>
         <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
         <UsersProvider>
-          <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
+          <CassavasProvider>
+            <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
+          </CassavasProvider>
         </UsersProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

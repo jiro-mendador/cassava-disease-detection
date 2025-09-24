@@ -11,7 +11,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { delayExecute } from "@/helpers/delayExecute";
-import { useUsers } from "@/hooks/useUser";
+import { useUsers } from "@/hooks/useUsers";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
