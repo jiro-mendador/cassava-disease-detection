@@ -5,6 +5,8 @@
 
 ### * Get All Users (WITH PAGINATIONS AND SOME FILTER FOR role status)
 GET {{baseUrl}}/users?page=1&limit=10&status=pending&role=user
+### * Get All Users (WITH PAGINATIONS AND SOME FILTER FOR role status)
+GET {{baseUrl}}/users
 
 ### * Get User by ID
 GET {{baseUrl}}/users/682a10ebf6153e49e2ada124
@@ -53,15 +55,27 @@ Content-Type: application/json
 }
 
 ### * Update User
-PUT {{baseUrl}}/users/684f1591392385a6bcaba786
+PATCH {{baseUrl}}/users/68cde6aca08bde81baeaae60
 Content-Type: application/json
 
 {
-  "name": "admin updated",
-  "email": "admin@gmail.com",
-  "password": "Admin12345/123",
-  "role": "admin",
-  "status": "active"
+ "firstName": "Jiro",
+ "lastName": "Mendador",
+ "email": "jiwo@email.com",
+ "role": "user",
+ "status": "active"
+}
+
+### * Update User
+PUT {{baseUrl}}/users/68cde6aca08bde81baeaae60
+Content-Type: application/json
+
+{
+ "firstName": "Jiro",
+ "lastName": "Mendador",
+ "email": "jiwo@email.com",
+ "role": "user",
+ "status": "active"
 }
 
 ### * Delete User

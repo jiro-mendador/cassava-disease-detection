@@ -203,11 +203,13 @@ const verifyEmailRegistered = async (req, res) => {
 const registerUser = async (req, res) => {
   try {
     // * nulls
-    const { name, email, password } = req.body;
+    const { firstName, lastName, email, password } = req.body;
+    console.log("REQ BODY:", req.body);
 
     // * Check for missing required fields
     const hasMissingFields = nullChecker(res, {
-      name,
+      firstName,
+      lastName,
       email,
       password,
     });
@@ -257,6 +259,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log("REQ BODY: ", req.body);
 
     if (!email || !password) {
       return res
@@ -356,15 +359,16 @@ const updateUser = async (req, res) => {
   try {
     const userId = req.params.id;
     let updates = { ...req.body };
+    console.log("REQ BODY: ", req.body);
 
     // * nulls
-    const { name, email, password, role, status } = updates;
+    const { firstName, lastName, email, password, role, status } = updates;
 
     // * Check for missing required fields
     const hasMissingFields = nullChecker(res, {
-      name,
+      firstName,
+      lastName,
       email,
-      password,
     });
 
     if (hasMissingFields) return;

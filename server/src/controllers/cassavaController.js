@@ -8,9 +8,10 @@ const addCassava = async (req, res) => {
   let image = null;
 
   try {
-    const { detectedType, user } = req.body;
+    const { detectedType, user, actualType } = req.body;
     image = req.file;
 
+    console.log("REQ BODY : ", req.body);
     console.log("IMAGE : ", image);
 
     // * Null checks
@@ -23,11 +24,30 @@ const addCassava = async (req, res) => {
       deleteFile(image.filename);
     }
 
-    const cassava = new Cassava({
-      detectedType,
+    // * ACTUAL, UNCOMMENT THIS ON FINAL
+    // const newCassava = {
+    //   detectedType,
+    //   user,
+    //   image: image.filename,
+    // };
+
+    // if (actualType) {
+    //   newCassava.actualType = actualType;
+    // }
+
+    // ! TESTING PURPOSES ONLY
+    const newCassava = {
+      detectedType: detectedType === "healthy" ? "Healthy" : "Diseased",
       user,
       image: image.filename,
-    });
+    };
+
+    if (actualType) {
+      newCassava.actualType = actualType === "healthy" ? "Healthy" : "Diseased";
+    }
+    // ! END OF TESTING
+
+    const cassava = new Cassava(newCassava);
 
     await cassava.save();
 
@@ -38,6 +58,8 @@ const addCassava = async (req, res) => {
     });
   } catch (error) {
     deleteFile(image.filename);
+
+    console.log(error.message);
 
     res.status(500).json({
       success: false,

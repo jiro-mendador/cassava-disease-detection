@@ -19,12 +19,13 @@ import { detect } from "./src/controllers/cassavaDetection.js";
 
 let app = express();
 dotenv.config();
-const server = app.listen(process.env.PORT);
+const server = app.listen(process.env.PORT, "0.0.0.0");
 
 // * MIDDLEWARES
+// app.use(cors({ origin: "*" }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 
 // * connecting to the mongodb server
 await connectMongoDB();

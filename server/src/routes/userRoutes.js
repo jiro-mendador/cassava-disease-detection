@@ -38,6 +38,7 @@ userRoutes.post("/", registerUser);
 userRoutes.get("/:id", getUser);
 userRoutes.get("/", getUsers);
 userRoutes.put("/:id", updateUser);
+userRoutes.patch("/:id", updateUser);
 userRoutes.delete("/:id", deleteUser);
 
 // * USE THIS MIDDLEWARE FOR MULTIPLE UPLOADS
