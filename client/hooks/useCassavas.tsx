@@ -1,12 +1,40 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import api from "@/services/api";
+import { useUsers } from "./useUsers";
 
 const CassavasContext = createContext<any>(null);
 
 export const CassavasProvider = ({ children }: any) => {
+  const { currentUser } = useUsers();
+
   const saveCassavaDetection = async (userData, configs) => {
     try {
       let response = await api.post("/cassava", userData, configs);
+
+      if (response.data.success) {
+        return response.data;
+      }
+      return null;
+    } catch (err: any) {
+      if (err.response.data.message) {
+        alert(err.response.data.message);
+        console.error("REQUEST ERROR: ", err.response.data.message);
+      } else {
+        console.error("GENERIC ERROR: ", err.message);
+      }
+      return null;
+    }
+  };
+
+  const getCassavaDetections = async (date = null) => {
+    try {
+      console.log(currentUser._id);
+
+      const url = `/cassava?page=1&limit=1000&user=68cde6aca08bde81baeaae60&date=2025-10-02`;
+      
+      console.log(url);
+
+      let response = await api.get(`${url}`);
 
       if (response.data.success) {
         return response.data;
@@ -91,6 +119,7 @@ export const CassavasProvider = ({ children }: any) => {
     <CassavasContext.Provider
       value={{
         saveCassavaDetection,
+        getCassavaDetections,
       }}
     >
       {children}
