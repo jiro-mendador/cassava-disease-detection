@@ -21,7 +21,7 @@ GET {{baseUrl}}/detect
 GET {{baseUrl}}/cassava?page=1&limit=10&detectedType=Diseased&actualType=Diseased
 
 ### * Get All Cassava Records (with filters & pagination)
-GET {{baseUrl}}/cassava?page=1&limit=10&user=68cde6aca08bde81baeaae60
+GET {{baseUrl}}/cassava?page=1&limit=10&user=68cde6aca08bde81baeaae60&date=null
 
 ### * Get One Cassava Record
 GET {{baseUrl}}/cassava/68c0b3f9de96e64d24ef7c26

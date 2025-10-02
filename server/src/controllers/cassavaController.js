@@ -100,12 +100,29 @@ const getCassava = async (req, res) => {
 // * Get All Cassava Records (with filters & pagination)
 const getCassavas = async (req, res) => {
   try {
-    const { page = 1, limit = 10, detectedType, actualType, user } = req.query;
+    const {
+      page = 1,
+      limit = 10,
+      detectedType,
+      actualType,
+      user,
+      date,
+    } = req.query;
 
     const filter = {};
     if (detectedType) filter.detectedType = detectedType;
     if (actualType) filter.actualType = actualType;
     if (user) filter.user = user;
+
+    if (date && date !== "null") {
+      const start = new Date(date);
+      const end = new Date(date);
+      end.setUTCHours(23, 59, 59, 999);
+
+      filter.createdAt = { $gte: start, $lte: end };
+    }
+
+    console.log("REQ BODY: ", req.body);
 
     const pageNumber = parseInt(page);
     const limitNumber = parseInt(limit);
