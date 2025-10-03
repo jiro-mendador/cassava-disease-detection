@@ -30,7 +30,7 @@ export const CassavasProvider = ({ children }: any) => {
     try {
       console.log(currentUser._id);
 
-      const url = `/cassava?page=1&limit=1000&user=68cde6aca08bde81baeaae60&date=2025-10-02`;
+      const url = `/cassava?page=1&limit=1000&user=68cde6aca08bde81baeaae60&date=${date}`;
       
       console.log(url);
 

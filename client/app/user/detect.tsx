@@ -3,6 +3,7 @@ import Nav from "@/components/nav";
 import {
   StatusBar,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
   Image,
@@ -16,7 +17,6 @@ import {
 } from "@expo/vector-icons";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { TextInput } from "react-native-gesture-handler";
 import { useFocusEffect } from "@react-navigation/native";
 import { usePathname } from "expo-router";
 import { getDateFormatted } from "@/helpers/getDateFormatted";
@@ -24,6 +24,7 @@ import api from "@/services/api";
 import FullScreenImagePreview from "@/components/fullScreenImagePreview";
 import { useCassavas } from "@/hooks/useCassavas";
 import { useUsers } from "@/hooks/useUsers";
+import LoadingOverlay from "@/components/loadingOverlay";
 
 const Detect = () => {
   const [permission, requestPermission] = useCameraPermissions();
@@ -49,10 +50,9 @@ const Detect = () => {
     date: "N/A",
   });
 
-  const handleDetectionDetailsChange = (
-    field: keyof typeof detectionDetails,
-    value: string
-  ) => {
+  const actualType = "";
+
+  const handleDetectionDetailsChange = (field, value) => {
     setDetectionDetails((prev) => ({
       ...prev,
       [field]: value,
@@ -152,8 +152,10 @@ const Detect = () => {
     formData.append("user", currentUser._id);
 
     // * Call your context method
+    console.log("SENDING RECORD");
     const response = await saveCassavaDetection(formData, configs);
 
+    console.log("Response:", response);
     if (response) {
       console.log("Save Detection Response:", response);
       alert(response.message);
@@ -211,15 +213,6 @@ const Detect = () => {
     });
     setLoading(false);
   };
-
-  const LoadingOverlay = () => (
-    <View className="absolute top-0 left-0 right-0 bottom-0 bg-black/75 flex items-center justify-center z-50">
-      <ActivityIndicator size="large" color="#bded30" />
-      <Text className="text-white text-lg font-semibold mt-4">
-        Identifying cassava health...
-      </Text>
-    </View>
-  );
 
   const OpenCameraComponent = () => {
     return (
@@ -310,10 +303,10 @@ const Detect = () => {
 
   const DetectionDetailsComponent = () => {
     return (
-      <ScrollView
-        className="mt-8"
-        showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-6 pb-24"
+      <View
+        className="mt-8 flex gap-4"
+        // showsHorizontalScrollIndicator={false}
+        // contentContainerClassName="gap-6 pb-24"
       >
         <View className="flex flex-col gap-4">
           <Text className="text-white text-sm font-semibold">
@@ -327,22 +320,24 @@ const Detect = () => {
               onChangeText={(e) =>
                 handleDetectionDetailsChange("detectedType", e)
               }
-              readOnly
+              editable={false}
             />
           </View>
         </View>
         <View className="flex flex-col gap-4">
           <Text className="text-white text-sm font-semibold">Actual Type</Text>
           <View className="border border-gray-400 rounded-3xl p-3">
-            <TextInput
-              className="text-white text-sm placeholder:text-gray-400"
-              multiline={false}
-              value={detectionDetails.actualType}
-              onChangeText={(e) =>
-                handleDetectionDetailsChange("actualType", e)
-              }
-              readOnly={photo === null}
-            />
+            <ScrollView>
+              <TextInput
+                className="text-white text-sm placeholder:text-gray-400"
+                multiline={false}
+                value={detectionDetails.actualType}
+                onChangeText={(e) =>
+                  handleDetectionDetailsChange("actualType", e)
+                }
+                editable={photo !== null}
+              />
+            </ScrollView>
           </View>
         </View>
         <View className="flex flex-col gap-4">
@@ -353,11 +348,11 @@ const Detect = () => {
               multiline={false}
               value={detectionDetails.date}
               onChangeText={(e) => handleDetectionDetailsChange("date", e)}
-              readOnly
+              editable={false}
             />
           </View>
         </View>
-      </ScrollView>
+      </View>
     );
   };
 
@@ -373,7 +368,7 @@ const Detect = () => {
         onClose={() => setPreviewVisible(false)}
       />
 
-      {loading && <LoadingOverlay />}
+      {loading && <LoadingOverlay text="Identifying cassava health..." />}
     </SafeAreaView>
   );
 };

@@ -12,42 +12,62 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { useCassavas } from "@/hooks/useCassavas";
 import { getDateFormatted } from "@/helpers/getDateFormatted";
+import LoadingOverlay from "@/components/loadingOverlay";
+import DetectionDetailsModal from "@/components/detectionDetailsModal";
 
 const Home = () => {
   const [cassavaDetection, setCassavaDetections] = useState([]);
   const { getCassavaDetections } = useCassavas();
+  const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
 
   const dateToday = new Date().toISOString().split("T")[0];
   const [dateFilter, setDateFilter] = useState<string | null>(dateToday);
 
   useEffect(() => {
     const getData = async () => {
-      console.log(dateToday);
+      setLoading(true);
+      console.log(dateFilter);
       const response = await getCassavaDetections(dateFilter);
 
       if (response.success) {
-        console.log(response.data);
         setCassavaDetections(response.data);
       }
+
+      setLoading(false);
     };
 
     getData();
   }, [dateFilter]);
 
   const getStyleText = (type) => {
-    return type === "Healthy" ? (
-      <Text className="text-[#bded30] text-xl font-semibold">{type}</Text>
-    ) : (
-      <Text className="text-[#ED304B] text-xl font-semibold">{type}</Text>
+    // return type === "Healthy" ? (
+    //   <Text className="text-[#bded30] text-xl font-semibold">{type}</Text>
+    // ) : (
+    //   <Text className="text-[#ED304B] text-xl font-semibold">{type}</Text>
+    // );
+    return (
+      <Text
+        className={
+          "text-[" + getColorBasedOnType(type) + "] text-xl font-semibold"
+        }
+      >
+        {type}
+      </Text>
     );
   };
 
   const getStyledIcon = (type) => {
-    return type === "Healthy" ? (
-      <Ionicons name="leaf" size={20} color="#bded30" />
-    ) : (
-      <Ionicons name="leaf" size={20} color="#ED304B" />
-    );
+    // return type === "Healthy" ? (
+    //   <Ionicons name="leaf" size={20} color="#bded30" />
+    // ) : (
+    //   <Ionicons name="leaf" size={20} color="#ED304B" />
+    // );
+    return <Ionicons name="leaf" size={20} color={getColorBasedOnType(type)} />;
+  };
+
+  const getColorBasedOnType = (type) => {
+    return type === "Healthy" ? "#bded30" : "#ED304B";
   };
 
   return (
@@ -59,17 +79,39 @@ const Home = () => {
         </Text>
 
         <View className="flex flex-row gap-2 self-center mt-12">
-          <TouchableOpacity className="bg-[#bded30] border border-[#bded30] rounded-xl w-[7rem] p-4">
+          <TouchableOpacity
+            className={
+              "border " +
+              (dateFilter === null
+                ? "border-gray-400"
+                : "bg-[#bded30] border-[#bded30]") +
+              " rounded-xl w-[7rem] p-4"
+            }
+          >
             <Text
-              className="font-semibold text-sm text-center text-black"
+              className={
+                (dateFilter === null ? "text-white" : "text-black") +
+                " font-semibold text-sm text-center"
+              }
               onPress={() => setDateFilter(dateToday)}
             >
               Today
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity className="border border-gray-400 rounded-xl w-[7rem] p-4">
+          <TouchableOpacity
+            className={
+              "border " +
+              (dateFilter !== null
+                ? "border-gray-400"
+                : "bg-[#bded30] border-[#bded30]") +
+              " rounded-xl w-[7rem] p-4"
+            }
+          >
             <Text
-              className="font-semibold text-sm text-center text-white"
+              className={
+                (dateFilter !== null ? "text-white" : "text-black") +
+                " font-semibold text-sm text-center"
+              }
               onPress={() => setDateFilter(null)}
             >
               All
@@ -86,7 +128,10 @@ const Home = () => {
             cassavaDetection.map((cassava) => {
               return (
                 <>
-                  <TouchableOpacity className="rounded-3xl border border-gray-400 p-6 flex flex-row gap-4 items-center">
+                  <TouchableOpacity
+                    key={cassava._id}
+                    className="rounded-3xl border border-gray-400 p-6 flex flex-row gap-4 items-center"
+                  >
                     <View className="border border-gray-400 rounded-full p-4 w-14 items-center">
                       {getStyledIcon(cassava.detectedType)}
                     </View>
@@ -102,6 +147,15 @@ const Home = () => {
             })}
         </ScrollView>
       </View>
+
+      <DetectionDetailsModal
+        data={null}
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
+
+      {loading && <LoadingOverlay text="Retrieving data..." />}
+
       <Nav currentScreen="home" />
     </SafeAreaView>
   );
