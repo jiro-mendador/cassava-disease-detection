@@ -13,8 +13,8 @@ const cassavaSchema = new mongoose.Schema(
     },
     actualType: {
       type: String,
-      enum: ["None", "Healthy", "Diseased"],
-      default: "None",
+      enum: ["N/A", "Healthy", "Diseased"],
+      default: "N/A",
     },
     image: {
       type: String,

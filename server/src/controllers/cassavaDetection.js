@@ -5,6 +5,7 @@ import deleteFile from "../utils/deleteFile.js";
 const detect = async (req, res) => {
   // * declare outside so when it errors we can delete the uploaded image
   let image = null;
+  console.log("REQ : ", req);
 
   try {
     image = req.file;

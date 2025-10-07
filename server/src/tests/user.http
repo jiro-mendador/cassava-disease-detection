@@ -16,9 +16,12 @@ POST {{baseUrl}}/users
 Content-Type: application/json
 
 {
-  "name": "user",
-  "email": "user@gmail.com",
-  "password": "User12345/123"
+  "firstName": "Jiro",
+  "lastName": "Mendador",
+  "email": "jiwo@email.com",
+  "role": "user",
+  "status": "active",
+  "password" : "Jiwo.12345"
 }
 
 ### * Register User (staff)

@@ -106,7 +106,7 @@ const getCassavas = async (req, res) => {
       detectedType,
       actualType,
       user,
-      date,
+      createdAt,
     } = req.query;
 
     const filter = {};
@@ -114,10 +114,12 @@ const getCassavas = async (req, res) => {
     if (actualType) filter.actualType = actualType;
     if (user) filter.user = user;
 
-    if (date && date !== "null") {
-      const start = new Date(date);
-      const end = new Date(date);
-      end.setUTCHours(23, 59, 59, 999);
+    if (createdAt && createdAt !== "null") {
+      const start = new Date(createdAt);
+      start.setUTCHours(-8, 0, 0, 0); // start of PH day in UTC
+
+      const end = new Date(createdAt);
+      end.setUTCHours(15, 59, 59, 999); // end of PH day in UTC
 
       filter.createdAt = { $gte: start, $lte: end };
     }
@@ -130,6 +132,7 @@ const getCassavas = async (req, res) => {
 
     const cassavas = await Cassava.find(filter)
       .populate("user", "-password")
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNumber);
 
@@ -161,6 +164,8 @@ const updateCassava = async (req, res) => {
     const cassavaId = req.params.id;
 
     const { actualType, detectedType, user } = req.body;
+
+    console.log("REQ BODY : ", req.body);
 
     // * Null checks
     const hasMissingFields = nullChecker(res, {
