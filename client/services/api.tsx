@@ -1,9 +1,9 @@
+import { backend_api } from "@/app/constants/backend_api";
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8080/api", // * FOR MOBILE!!!
-  // baseURL: "http://localhost:8080/api", // * Set the base URL for the API
-  timeout: 10000, // * Optional: Set a timeout for requests (in milliseconds)
+  baseURL: backend_api,
+  timeout: 60000, // * Optional: Set a timeout for requests (in milliseconds)
   headers: {
     "Content-Type": "application/json;charset=UTF-8",
     "Access-Control-Allow-Origin": "*",

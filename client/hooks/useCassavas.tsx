@@ -7,9 +7,23 @@ const CassavasContext = createContext<any>(null);
 export const CassavasProvider = ({ children }: any) => {
   const { currentUser } = useUsers();
 
-  const saveCassavaDetection = async (userData, configs) => {
+  const saveCassavaDetection = async (
+    userData,
+    configs = null,
+    requestType = "insert",
+    id = null
+  ) => {
     try {
-      let response = await api.post("/cassava", userData, configs);
+      let response = null;
+
+      if (requestType === "insert") {
+        response = await api.post("/cassava", userData, configs);
+      } else {
+        console.log(userData);
+        console.log(requestType);
+        console.log(id);
+        response = await api.put(`/cassava/${id}`, userData, configs);
+      }
 
       if (response.data.success) {
         return response.data;
@@ -30,8 +44,31 @@ export const CassavasProvider = ({ children }: any) => {
     try {
       console.log(currentUser._id);
 
-      const url = `/cassava?page=1&limit=1000&user=68cde6aca08bde81baeaae60&date=${date}`;
-      
+      const url = `/cassava?page=1&limit=1000&user=${currentUser._id}&createdAt=${date}`;
+
+      console.log(url);
+
+      let response = await api.get(`${url}`);
+
+      if (response.data.success) {
+        return response.data;
+      }
+      return null;
+    } catch (err: any) {
+      if (err.response.data.message) {
+        alert(err.response.data.message);
+        console.error("REQUEST ERROR: ", err.response.data.message);
+      } else {
+        console.error("GENERIC ERROR: ", err.message);
+      }
+      return null;
+    }
+  };
+
+  const getCassavaDetection = async (id) => {
+    try {
+      const url = `/cassava/${id}`;
+
       console.log(url);
 
       let response = await api.get(`${url}`);
@@ -120,6 +157,7 @@ export const CassavasProvider = ({ children }: any) => {
       value={{
         saveCassavaDetection,
         getCassavaDetections,
+        getCassavaDetection,
       }}
     >
       {children}

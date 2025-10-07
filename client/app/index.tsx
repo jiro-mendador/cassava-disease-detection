@@ -12,8 +12,8 @@ const Index = () => {
 
   const onStartClick = () => {
     // router.push("/login");
-    // router.replace("/user/detect");
-    router.replace("/user/home");
+    router.replace("/user/detect");
+    // router.replace("/user/home");
   };
 
   return (

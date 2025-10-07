@@ -17,40 +17,50 @@ import DetectionDetailsModal from "@/components/detectionDetailsModal";
 
 const Home = () => {
   const [cassavaDetection, setCassavaDetections] = useState([]);
-  const { getCassavaDetections } = useCassavas();
+  const { getCassavaDetections, getCassavaDetection } = useCassavas();
   const [loading, setLoading] = useState(false);
-  const [modalVisible, setModalVisible] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const dateToday = new Date().toISOString().split("T")[0];
   const [dateFilter, setDateFilter] = useState<string | null>(dateToday);
 
+  const [modalDetectionData, setModalDetectionData] = useState(null);
+
+  const getData = async () => {
+    setLoading(true);
+    console.log(dateFilter);
+    const response = await getCassavaDetections(dateFilter);
+
+    if (response.success) {
+      setCassavaDetections(response.data);
+    }
+
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const getData = async () => {
-      setLoading(true);
-      console.log(dateFilter);
-      const response = await getCassavaDetections(dateFilter);
-
-      if (response.success) {
-        setCassavaDetections(response.data);
-      }
-
-      setLoading(false);
-    };
-
     getData();
   }, [dateFilter]);
 
-  const getStyleText = (type) => {
-    // return type === "Healthy" ? (
-    //   <Text className="text-[#bded30] text-xl font-semibold">{type}</Text>
-    // ) : (
-    //   <Text className="text-[#ED304B] text-xl font-semibold">{type}</Text>
-    // );
+  const onCassavaDetectionRecordClick = async (id) => {
+    const response = await getCassavaDetection(id);
+
+    if (response.success) {
+      console.log(response.data);
+      setModalDetectionData(response.data);
+      setModalVisible(true);
+      return;
+    }
+
+    setModalDetectionData(null);
+    setModalVisible(false);
+  };
+
+  const getStyledText = (type) => {
     return (
       <Text
-        className={
-          "text-[" + getColorBasedOnType(type) + "] text-xl font-semibold"
-        }
+        style={{ color: getColorBasedOnType(type) }}
+        className={"text-xl font-semibold"}
       >
         {type}
       </Text>
@@ -58,16 +68,11 @@ const Home = () => {
   };
 
   const getStyledIcon = (type) => {
-    // return type === "Healthy" ? (
-    //   <Ionicons name="leaf" size={20} color="#bded30" />
-    // ) : (
-    //   <Ionicons name="leaf" size={20} color="#ED304B" />
-    // );
     return <Ionicons name="leaf" size={20} color={getColorBasedOnType(type)} />;
   };
 
   const getColorBasedOnType = (type) => {
-    return type === "Healthy" ? "#bded30" : "#ED304B";
+    return type === "Healthy" ? "#bded30" : "#ed304b";
   };
 
   return (
@@ -124,35 +129,50 @@ const Home = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerClassName="p-4 gap-4 pb-24"
         >
-          {cassavaDetection &&
-            cassavaDetection.map((cassava) => {
-              return (
-                <>
+          {cassavaDetection && cassavaDetection.length > 0
+            ? cassavaDetection.map((cassava) => {
+                return (
                   <TouchableOpacity
                     key={cassava._id}
+                    onPress={() => onCassavaDetectionRecordClick(cassava._id)}
                     className="rounded-3xl border border-gray-400 p-6 flex flex-row gap-4 items-center"
                   >
                     <View className="border border-gray-400 rounded-full p-4 w-14 items-center">
                       {getStyledIcon(cassava.detectedType)}
                     </View>
                     <View className="flex flex-col gap-2">
-                      {getStyleText(cassava.detectedType)}
+                      {getStyledText(cassava.detectedType)}
                       <Text className="text-white text-sm">
                         {getDateFormatted(cassava.createdAt)}
                       </Text>
                     </View>
                   </TouchableOpacity>
-                </>
-              );
-            })}
+                );
+              })
+            : !loading && (
+                <View className="flex items-center justify-center gap-4 py-20 max-w-sm self-center">
+                  <Text className="text-gray-500 text-base font-semibold">
+                    Looks empty...
+                  </Text>
+                  <Text className="text-gray-500 text-base font-semibold">
+                    Capture a cassava first and see your records here!
+                  </Text>
+                </View>
+              )}
         </ScrollView>
       </View>
 
-      <DetectionDetailsModal
-        data={null}
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-      />
+      {modalDetectionData && (
+        <DetectionDetailsModal
+          data={modalDetectionData}
+          visible={modalVisible}
+          onClose={async () => {
+            await getData();
+            setModalDetectionData(null);
+            setModalVisible(false);
+          }}
+        />
+      )}
 
       {loading && <LoadingOverlay text="Retrieving data..." />}
 
