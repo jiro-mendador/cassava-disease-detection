@@ -16,7 +16,7 @@ const detect = async (req, res) => {
     const imageBase64 = imageFile.toString("base64");
 
     const response = await axios.post(
-      "https://detect.roboflow.com/cassava-leaf-bko96/1",
+      "https://detect.roboflow.com/cassava-vcgdb/2",
       imageBase64,
       {
         params: {
