@@ -1,5 +1,6 @@
 # to run with usb debugging on and phone connected on pc via cable, run this first on cmd:
-adb reverse tcp:8081 tcp:8081 <!-- to be able to connect the phone in localhost backend -->
+adb reverse tcp:8081 tcp:8081 <!-- to be able to connect the phone in pc -->
+adb reverse tcp:8080 tcp:8080 <!-- to be able to connect the phone in localhost backend -->
 
 # download expo go first on phone
 

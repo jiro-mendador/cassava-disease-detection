@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { TextInput } from "react-native-gesture-handler";
-import { backend_api } from "@/app/constants/backend_api";
+import { getBackendApi } from "../constants/backend_api";
 import { useEffect, useState } from "react";
 import { getDateFormatted } from "@/helpers/getDateFormatted";
 import { useCassavas } from "@/hooks/useCassavas";
@@ -79,7 +79,7 @@ const DetectionDetailsModal = ({ data, visible, onClose }) => {
             {detectionDetails?.image && (
               <Image
                 source={{
-                  uri: backend_api + "/images/" + detectionDetails.image,
+                  uri: getBackendApi() + "/images/" + detectionDetails.image,
                 }}
                 className="w-full h-full rounded-xl"
                 resizeMode="contain"
