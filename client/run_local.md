@@ -9,3 +9,6 @@ npx expo start --host=localhost
 
 # run this command on vs code or any editor terminal:
 npx expo start --localhost --android
+
+# exporting apk
+npx eas build -p android --profile preview
