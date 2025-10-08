@@ -74,7 +74,7 @@ app.get("/api/detect", detect);
 // );
 
 // * start server
-app.get("/", async (req, res) => {
+app.get("/api", async (req, res) => {
   res.json({ message: "Server Started", port: process.env.PORT });
 });
 
