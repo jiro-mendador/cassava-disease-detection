@@ -15,6 +15,7 @@ import { getDateFormatted } from "@/helpers/getDateFormatted";
 import { useCassavas } from "@/hooks/useCassavas";
 import LoadingOverlay from "./loadingOverlay";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { isInputValid } from "@/helpers/isInputValid";
 
 const DetectionDetailsModal = ({ data, visible, onClose }) => {
   const { saveCassavaDetection } = useCassavas();
@@ -32,6 +33,19 @@ const DetectionDetailsModal = ({ data, visible, onClose }) => {
   const saveDetection = async () => {
     if (detectionDetails.actualType === "") {
       alert("Actual Type cannot be empty!");
+      return;
+    }
+
+    console.log(
+      isInputValid(detectionDetails.actualType),
+      isInputValid(detectionDetails.detectedType)
+    );
+
+    if (
+      !isInputValid(detectionDetails.actualType) ||
+      !isInputValid(detectionDetails.detectedType)
+    ) {
+      alert("Invalid Actual and/or Detected Type \n(Healthy, Unhealthy, N/A)");
       return;
     }
 
@@ -55,20 +69,15 @@ const DetectionDetailsModal = ({ data, visible, onClose }) => {
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      className="relative"
-    >
+    <Modal visible={visible} transparent animationType="fade" className="">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1 bg-black/80 justify-center"
+        className="flex-1 bg-black/80 justify-center relative"
       >
         {/* Close button */}
         <TouchableOpacity
           onPress={onClose}
-          className="bg-white absolute top-6 right-8 rounded-full p-3 w-16 mb-4 self-end flex items-center"
+          className="bg-white absolute top-12 right-8 rounded-full p-3 w-16 mb-4 self-end flex items-center"
         >
           <Ionicons name="close" size={28} color="black" />
         </TouchableOpacity>

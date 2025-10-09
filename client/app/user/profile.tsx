@@ -15,10 +15,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { useUsers } from "@/hooks/useUsers";
+import LoadingOverlay from "@/components/loadingOverlay";
 
 const Profile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { currentUser, updateUser } = useUsers();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     console.log(currentUser);
@@ -47,6 +49,7 @@ const Profile = () => {
   };
 
   const onSaveClick = async () => {
+    setLoading(true);
     const response = await updateUser(userInput, currentUser._id);
     if (response) {
       alert("User Updated Successfully!");
@@ -54,6 +57,7 @@ const Profile = () => {
         return { ...prevUserInput, password: "" };
       });
     }
+    setLoading(false);
   };
 
   return (
@@ -73,7 +77,8 @@ const Profile = () => {
             {/* NAME INITIALS (FIRST AND LAST) */}
             <View className="bg-[#bded30] border border-[#bded30] rounded-xl p-6">
               <Text className="font-bold text-4xl text-center text-black">
-                JM
+                {userInput.firstName[0] && userInput.firstName[0] + ""}
+                {userInput.lastName[0] + ""}
               </Text>
             </View>
             <View className="p-4 flex-1 border border-gray-400 rounded-2xl">
@@ -166,6 +171,8 @@ const Profile = () => {
           </ScrollView>
         </View>
       </KeyboardAvoidingView>
+
+      {loading && <LoadingOverlay text="Saving Information..." />}
 
       <Nav currentScreen="profile" />
     </SafeAreaView>

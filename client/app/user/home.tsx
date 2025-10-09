@@ -71,8 +71,12 @@ const Home = () => {
     return <Ionicons name="leaf" size={20} color={getColorBasedOnType(type)} />;
   };
 
-  const getColorBasedOnType = (type) => {
-    return type === "Healthy" ? "#bded30" : "#ed304b";
+  const getColorBasedOnType = (type: string) => {
+    return type.toLowerCase().includes("unhealthy")
+      ? "#ed304b"
+      : type.toLowerCase().includes("healthy")
+        ? "#bded30"
+        : "gray";
   };
 
   return (

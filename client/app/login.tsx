@@ -88,6 +88,7 @@ const Login = () => {
             <View className="bg-[#fefefe] p-3 rounded-3xl">
               <TextInput
                 className="text-sm placeholder:text-gray-400 h-[3rem]"
+                style={{ color: "black" }}
                 placeholder="Enter your email"
                 value={userInput.email}
                 onChangeText={(e) => handleInputChange("email", e)}
@@ -104,6 +105,7 @@ const Login = () => {
             <View className="bg-[#fefefe] p-3 rounded-3xl">
               <TextInput
                 className="text-sm placeholder:text-gray-400 h-[3rem]"
+                style={{ color: "black" }}
                 placeholder="Enter your password"
                 textContentType="password"
                 secureTextEntry={!showPassword}

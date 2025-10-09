@@ -28,6 +28,8 @@ import { useCassavas } from "@/hooks/useCassavas";
 import { useUsers } from "@/hooks/useUsers";
 import LoadingOverlay from "@/components/loadingOverlay";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { getClassification } from "@/helpers/getClassification";
+import { isInputValid } from "@/helpers/isInputValid";
 
 const Detect = () => {
   const [permission, requestPermission] = useCameraPermissions();
@@ -87,6 +89,14 @@ const Detect = () => {
       return;
     }
 
+    if (
+      !isInputValid(detectionDetails.actualType) ||
+      !isInputValid(detectionDetails.detectedType)
+    ) {
+      alert("Invalid Actual and/or Detected Type \n(Healthy, Unhealthy, N/A)");
+      return;
+    }
+
     const formData = new FormData();
 
     // * Add the image file
@@ -141,16 +151,25 @@ const Detect = () => {
       console.log("GOT RESULT!", response.data);
       if (response.data.success) {
         const responseData = response.data.data;
+
+        let classification = "";
+        if (!responseData.top || responseData.top === "") {
+          alert("Cannot Detect Image...");
+          classification = "N/A";
+        } else {
+          classification = getClassification(responseData.top);
+        }
+
         setDetectionDetails((prevData) => ({
           ...prevData,
-          detectedType: responseData.top,
+          detectedType: classification,
           date: getDateFormatted(isoDateNow),
         }));
         setPhoto(result.uri);
       } else {
         resetState();
         setDetectionDetails({
-          detectedType: "Can't detect right now...",
+          detectedType: "N/A",
           actualType: "N/A",
           date: getDateFormatted(isoDateNow),
         });

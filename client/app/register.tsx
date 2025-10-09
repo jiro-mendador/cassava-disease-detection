@@ -250,6 +250,7 @@ const Register = () => {
             <Text className="font-semibold">First Name</Text>
             <View className="bg-[#fefefe] p-3 rounded-3xl">
               <TextInput
+                style={{ color: "black" }}
                 className="text-sm placeholder:text-gray-400 h-[3rem]"
                 placeholder="Enter your first name"
                 value={userInput.firstName}
@@ -266,6 +267,7 @@ const Register = () => {
             <Text className="font-semibold">Last Name</Text>
             <View className="bg-[#fefefe] p-3 rounded-3xl">
               <TextInput
+                style={{ color: "black" }}
                 className="text-sm placeholder:text-gray-400 h-[3rem]"
                 placeholder="Enter your last name"
                 value={userInput.lastName}
@@ -282,6 +284,7 @@ const Register = () => {
             <Text className="font-semibold">Email</Text>
             <View className="bg-[#fefefe] p-3 rounded-3xl">
               <TextInput
+                style={{ color: "black" }}
                 className="text-sm placeholder:text-gray-400 h-[3rem]"
                 placeholder="Enter your email"
                 value={userInput.email}
@@ -298,6 +301,7 @@ const Register = () => {
             <Text className="font-semibold">Password</Text>
             <View className="bg-[#fefefe] p-3 rounded-3xl">
               <TextInput
+                style={{ color: "black" }}
                 className="text-sm placeholder:text-gray-400 h-[3rem]"
                 placeholder="Enter your password"
                 textContentType="password"
