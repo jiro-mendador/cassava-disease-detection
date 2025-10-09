@@ -36,14 +36,14 @@ const addCassava = async (req, res) => {
     // }
 
     // ! TESTING PURPOSES ONLY
-    const newCassava = {
-      detectedType: detectedType === "healthy" ? "Healthy" : "Diseased",
+    let newCassava = {
+      detectedType: detectedType.toLowerCase() === "healthy" ? "Healthy" : detectedType === "N/A" ? "N/A" : "Unhealthy",
       user,
       image: image.filename,
     };
 
     if (actualType) {
-      newCassava.actualType = actualType === "healthy" ? "Healthy" : "Diseased";
+      newCassava.actualType = actualType.toLowerCase() === "healthy" ? "Healthy" : actualType === "N/A" ? "N/A" : "Unhealthy";
     }
     // ! END OF TESTING
 
@@ -116,10 +116,10 @@ const getCassavas = async (req, res) => {
 
     if (createdAt && createdAt !== "null") {
       const start = new Date(createdAt);
-      start.setUTCHours(-8, 0, 0, 0); // start of PH day in UTC
+      start.setUTCHours(-8, 0, 0, 0); // * start of PH day in UTC
 
       const end = new Date(createdAt);
-      end.setUTCHours(15, 59, 59, 999); // end of PH day in UTC
+      end.setUTCHours(15, 59, 59, 999); // * end of PH day in UTC
 
       filter.createdAt = { $gte: start, $lte: end };
     }

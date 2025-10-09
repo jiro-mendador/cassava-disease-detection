@@ -17,12 +17,12 @@ const cassavaSchema = new mongoose.Schema(
     // },
     detectedType: {
       type: String,
-      enum: ["Healthy", "Diseased"],
+      enum: ["N/A", "Healthy", "Unhealthy"],
       required: true,
     },
     actualType: {
       type: String,
-      enum: ["N/A", "Healthy", "Diseased"],
+      enum: ["N/A", "Healthy", "Unhealthy"],
       default: "N/A",
     },
     image: {
