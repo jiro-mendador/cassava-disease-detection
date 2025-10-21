@@ -3,16 +3,36 @@ import { ImageBackground, Pressable, Text, View } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useEffect } from "react";
-import { initBackendApi } from "../constants/backend_api";
+import { useEffect, useState } from "react";
+import { getBackendApi, initBackendApi } from "../constants/backend_api";
+import LoadingOverlay from "@/components/loadingOverlay";
 
 const Index = () => {
+  const [loading, setLoading] = useState(true);
+
   // useEffect(() => {
   //   router.replace("/user/profile");
   // }, [1000]);
 
   useEffect(() => {
-    initBackendApi();
+    const connectToBackend = async () => {
+      try {
+        await initBackendApi();
+
+        const backend = getBackendApi();
+        console.log("Connected backend:", backend);
+
+        setLoading(true);
+      } catch (error) {
+        console.error("Connection error:", error);
+        setLoading(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    connectToBackend();
+    // initBackendApi();
   }, []);
 
   const onStartClick = () => {
@@ -75,6 +95,7 @@ const Index = () => {
           </Pressable>
         </ImageBackground>
       </View>
+      {loading && <LoadingOverlay text="Connecting to Server" />}
     </SafeAreaView>
   );
 };
