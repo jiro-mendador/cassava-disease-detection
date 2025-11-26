@@ -69,6 +69,7 @@ export const initBackendApi = async () => {
 
   console.log("Failed to connect to live backend after multiple retries.");
   api = backend_api_live;
+  console.log("Connected To: ", api);
 };
 
 // // * Function to check and set backend (call this ONCE in your start screen)

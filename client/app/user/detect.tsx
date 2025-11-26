@@ -1,4 +1,7 @@
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import Nav from "@/components/nav";
 import {
   StatusBar,
@@ -32,12 +35,17 @@ import { getClassification } from "@/helpers/getClassification";
 import { isInputValid } from "@/helpers/isInputValid";
 
 const Detect = () => {
+  const insets = useSafeAreaInsets();
+
   const [permission, requestPermission] = useCameraPermissions();
   const [cameraOpen, setCameraOpen] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
   const cameraRef = useRef<null>(null);
   const [loading, setLoading] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
+  const [loadingLabel, setLoadingLabel] = useState(
+    "Identifying cassava health..."
+  );
 
   // * hooks
   const { saveCassavaDetection } = useCassavas();
@@ -53,6 +61,7 @@ const Detect = () => {
     detectedType: "N/A",
     actualType: "N/A",
     date: "N/A",
+    recommendation: "N/A",
   });
 
   const handleDetectionDetailsChange = (field, value) => {
@@ -97,86 +106,236 @@ const Detect = () => {
       return;
     }
 
-    const formData = new FormData();
-
-    // * Add the image file
-    formData.append("image", {
-      uri: photo,
-      type: "image/jpeg",
-      name: `detectCassava.jpg`,
-    } as any);
-
-    // * Add other detection details
-    formData.append("detectedType", detectionDetails.detectedType);
-    formData.append("actualType", detectionDetails.actualType);
-    formData.append("date", detectionDetails.date);
-    formData.append("user", currentUser._id);
-
-    // * Call your context method
-    console.log("SENDING RECORD");
-    const response = await saveCassavaDetection(formData, configs);
-
-    console.log("Response:", response);
-    if (response) {
-      console.log("Save Detection Response:", response);
-      alert(response.message);
+    if (
+      !detectionDetails.recommendation ||
+      detectionDetails.recommendation === "N/A"
+    ) {
+      alert("Recommendation not ready yet. Please wait a few seconds.");
+      return;
     }
 
-    resetState();
+    try {
+      const formData = new FormData();
+
+      // * Add the image file
+      formData.append("image", {
+        uri: photo,
+        type: "image/jpeg",
+        name: `detectCassava.jpg`,
+      } as any);
+
+      // * Add other detection details
+      formData.append("detectedType", detectionDetails.detectedType);
+      formData.append("actualType", detectionDetails.actualType);
+      formData.append("recommendation", detectionDetails.recommendation);
+      formData.append("date", detectionDetails.date);
+      formData.append("user", currentUser._id);
+
+      // * Call your context method
+      console.log("SENDING RECORD");
+      const response = await saveCassavaDetection(formData, configs);
+
+      // console.log("Response:", response);
+      // if (response) {
+      //   console.log("Save Detection Response:", response);
+      //   alert(response.message);
+      // }
+      if (!response || !response.data) {
+        console.error("Save failed, response:", response);
+        alert("Failed to save detection. Please try again.");
+        return;
+      }
+
+      console.log("Save Detection Response:", response.data);
+      alert(response.data.message || "Saved successfully!");
+
+      resetState();
+    } catch (err: any) {
+      console.error("Save Detection Error:", err);
+      alert("Something went wrong while saving the detection.");
+    }
   };
 
+  // const takePicture = async () => {
+  //   if (cameraRef.current) {
+  //     const result = await cameraRef.current.takePictureAsync();
+
+  //     const formData = new FormData();
+  //     if (result.uri !== undefined && result.uri !== null) {
+  //       formData.append("image", {
+  //         uri: result.uri,
+  //         type: "image/jpeg",
+  //         name: "detectCassava.jpg",
+  //       } as any);
+  //     } else {
+  //       alert("Picture not taken properly. Please try again...");
+  //       return;
+  //     }
+
+  //     setLoading(true);
+
+  //     console.log("SENDING REQUEST");
+  //     const response = await api.post("/cassava/detect", formData, configs);
+
+  //     const isoDateNow = new Date().toISOString();
+
+  //     console.log("GOT RESULT!", response.data);
+
+  //     if (response.data.success && response.data !== null) {
+  //       const responseData = response.data.data;
+
+  //       let classification = "";
+  //       if (!responseData.top || responseData.top === "") {
+  //         alert("Cannot Detect Image...");
+  //         classification = "N/A";
+  //       } else {
+  //         classification = getClassification(responseData.top);
+  //       }
+
+  //       setDetectionDetails((prevData) => ({
+  //         ...prevData,
+  //         detectedType: classification,
+  //         date: getDateFormatted(isoDateNow),
+  //       }));
+  //       setPhoto(result.uri);
+  //     } else {
+  //       resetState();
+  //       setDetectionDetails({
+  //         detectedType: "N/A",
+  //         actualType: "N/A",
+  //         date: getDateFormatted(isoDateNow),
+  //       });
+  //     }
+
+  //     setLoading(false);
+  //     setCameraOpen(false);
+  //   }
+  // };
+
   const takePicture = async () => {
-    if (cameraRef.current) {
+    if (!cameraRef.current) return;
+
+    try {
       const result = await cameraRef.current.takePictureAsync();
 
-      const formData = new FormData();
-      if (result.uri !== undefined && result.uri !== null) {
-        formData.append("image", {
-          uri: result.uri,
-          type: "image/jpeg",
-          name: "detectCassava.jpg",
-        } as any);
-      } else {
+      if (!result.uri) {
         alert("Picture not taken properly. Please try again...");
         return;
       }
 
-      setLoading(true);
+      const formData = new FormData();
+      formData.append("image", {
+        uri: result.uri,
+        type: "image/jpeg",
+        name: "detectCassava.jpg",
+      } as any);
 
+      setLoadingLabel("Identifying cassava health...");
+      setLoading(true);
       console.log("SENDING REQUEST");
+
       const response = await api.post("/cassava/detect", formData, configs);
+      console.log("GOT RESULT!", response.data);
 
       const isoDateNow = new Date().toISOString();
 
-      console.log("GOT RESULT!", response.data);
-      if (response.data.success) {
-        const responseData = response.data.data;
+      if (response.data?.success && response.data?.data) {
+        // * if success generate recommendation now,
+        const recommendation = await getRecommendation(response.data?.data);
+        console.log(recommendation);
 
+        const responseData = response.data.data;
         let classification = "";
+        let reco = "";
+
         if (!responseData.top || responseData.top === "") {
-          alert("Cannot Detect Image...");
+          alert("Cannot detect image...");
           classification = "N/A";
         } else {
           classification = getClassification(responseData.top);
+        }
+
+        if (!recommendation) {
+          alert("Can't generate recommendation...");
+          reco = "N/A";
+        } else {
+          reco = recommendation.data;
         }
 
         setDetectionDetails((prevData) => ({
           ...prevData,
           detectedType: classification,
           date: getDateFormatted(isoDateNow),
+          recommendation: reco,
         }));
         setPhoto(result.uri);
       } else {
+        alert("Can't detect or use that image right now.");
         resetState();
         setDetectionDetails({
           detectedType: "N/A",
           actualType: "N/A",
           date: getDateFormatted(isoDateNow),
+          recommendation: "N/A",
         });
       }
+    } catch (error: any) {
+      console.error("Error detecting cassava:", error);
 
+      // * Handle backend or network errors
+      if (error.response) {
+        const status = error.response.status;
+        if (status === 413 || status === 500) {
+          alert("Can't detect or use that image right now.");
+        } else {
+          alert("Something went wrong while analyzing the image.");
+        }
+      } else {
+        alert("Network or camera error. Please try again.");
+      }
+
+      resetState();
+      setDetectionDetails({
+        detectedType: "N/A",
+        actualType: "N/A",
+        date: getDateFormatted(new Date().toISOString()),
+        recommendation: "N/A",
+      });
+    } finally {
       setLoading(false);
       setCameraOpen(false);
+    }
+  };
+
+  const getRecommendation = async (data) => {
+    try {
+      setLoadingLabel("Generating Recommendation...");
+      setLoading(true);
+      console.log("SENDING RECOMMENDATION REQUEST");
+
+      const response = await api.post("/cassava/analyze", {
+        roboflowResult: data.top,
+      });
+      console.log("GOT RECOMMENDATION RESULT!", response.data);
+
+      setLoading(false);
+      if (response.data?.success) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } catch (error: any) {
+      setLoading(false);
+      console.error("Error detecting cassava:", error);
+
+      // * Handle backend or network errors
+      if (error.response) {
+        alert("Can't recommend anything based on this result");
+      } else {
+        alert("Network or camera error. Please try again.");
+      }
+
+      return null;
     }
   };
 
@@ -187,6 +346,7 @@ const Detect = () => {
       detectedType: "N/A",
       actualType: "N/A",
       date: "N/A",
+      recommendation: "N/A",
     });
     setLoading(false);
   };
@@ -288,54 +448,74 @@ const Detect = () => {
               </View>
             </View>
             {/* DETAILS */}
-            <View className="mt-8 flex gap-4">
-              <View className="flex flex-col gap-4">
-                <Text className="text-white text-sm font-semibold">
-                  Detected Type
-                </Text>
-                <View className="border border-gray-400 rounded-3xl p-3">
-                  <TextInput
-                    className="text-white text-sm placeholder:text-gray-400"
-                    multiline={false}
-                    value={detectionDetails.detectedType}
-                    onChangeText={(e) =>
-                      handleDetectionDetailsChange("detectedType", e)
-                    }
-                    editable={false}
-                  />
+            <ScrollView
+              className="mt-8"
+              contentContainerStyle={{ paddingBottom: 100 }}
+              showsVerticalScrollIndicator={false}
+            >
+              <View className="flex flex-col gap-6">
+                {/* Detected Type */}
+                <View className="flex flex-col gap-2">
+                  <Text className="text-white text-sm font-semibold">
+                    Detected Type
+                  </Text>
+                  <View className="border border-gray-400 rounded-3xl p-3">
+                    <TextInput
+                      className="text-white text-sm placeholder:text-gray-400"
+                      value={detectionDetails.detectedType}
+                      editable={false}
+                    />
+                  </View>
+                </View>
+
+                {/* Actual Type */}
+                <View className="flex flex-col gap-2">
+                  <Text className="text-white text-sm font-semibold">
+                    Actual Type
+                  </Text>
+                  <View className="border border-gray-400 rounded-3xl p-3">
+                    <TextInput
+                      className="text-white text-sm placeholder:text-gray-400"
+                      value={detectionDetails.actualType}
+                      onChangeText={(e) =>
+                        handleDetectionDetailsChange("actualType", e)
+                      }
+                      editable={photo !== null}
+                    />
+                  </View>
+                </View>
+
+                {/* Recommendation */}
+                <View className="flex flex-col gap-2">
+                  <Text className="text-white text-sm font-semibold">
+                    Recommendation
+                  </Text>
+                  <View className="border border-gray-400 rounded-3xl p-3">
+                    <TextInput
+                      className="text-white text-sm placeholder:text-gray-400"
+                      value={detectionDetails.recommendation}
+                      onChangeText={(e) =>
+                        handleDetectionDetailsChange("recommendation", e)
+                      }
+                      editable={false}
+                      multiline={true}
+                    />
+                  </View>
+                </View>
+
+                {/* Date */}
+                <View className="flex flex-col gap-2">
+                  <Text className="text-white text-sm font-semibold">Date</Text>
+                  <View className="border border-gray-400 rounded-3xl p-3">
+                    <TextInput
+                      className="text-white text-sm placeholder:text-gray-400"
+                      value={detectionDetails.date}
+                      editable={false}
+                    />
+                  </View>
                 </View>
               </View>
-              <View className="flex flex-col gap-4">
-                <Text className="text-white text-sm font-semibold">
-                  Actual Type
-                </Text>
-                <View className="border border-gray-400 rounded-3xl p-3">
-                  <TextInput
-                    className="text-white text-sm placeholder:text-gray-400"
-                    multiline={false}
-                    value={detectionDetails.actualType}
-                    onChangeText={(e) =>
-                      handleDetectionDetailsChange("actualType", e)
-                    }
-                    editable={photo !== null}
-                  />
-                </View>
-              </View>
-              <View className="flex flex-col gap-4">
-                <Text className="text-white text-sm font-semibold">Date</Text>
-                <View className="border border-gray-400 rounded-3xl p-3">
-                  <TextInput
-                    className="text-white text-sm placeholder:text-gray-400"
-                    multiline={false}
-                    value={detectionDetails.date}
-                    onChangeText={(e) =>
-                      handleDetectionDetailsChange("date", e)
-                    }
-                    editable={false}
-                  />
-                </View>
-              </View>
-            </View>
+            </ScrollView>
           </View>
         </KeyboardAwareScrollView>
       )}
@@ -346,9 +526,11 @@ const Detect = () => {
         onClose={() => setPreviewVisible(false)}
       />
 
-      {loading && <LoadingOverlay text="Identifying cassava health..." />}
+      {loading && <LoadingOverlay text={loadingLabel} />}
 
-      {!cameraOpen && <Nav currentScreen="detect" />}
+      <View style={{ paddingBottom: insets.bottom || 10 }}>
+        {!cameraOpen && <Nav currentScreen="detect" />}
+      </View>
     </SafeAreaView>
   );
 };

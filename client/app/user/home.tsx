@@ -1,4 +1,7 @@
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import Nav from "@/components/nav";
 import {
   Pressable,
@@ -16,6 +19,8 @@ import LoadingOverlay from "@/components/loadingOverlay";
 import DetectionDetailsModal from "@/components/detectionDetailsModal";
 
 const Home = () => {
+  const insets = useSafeAreaInsets();
+
   const [cassavaDetection, setCassavaDetections] = useState([]);
   const { getCassavaDetections, getCassavaDetection } = useCassavas();
   const [loading, setLoading] = useState(false);
@@ -84,7 +89,7 @@ const Home = () => {
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
       <View className="relative flex-1 p-4">
         <Text className="text-2xl font-bold text-center text-white mt-8">
-          Cassava Crop Detection
+          SmartGrow Detection
         </Text>
 
         <View className="flex flex-row gap-2 self-center mt-12">
@@ -155,10 +160,10 @@ const Home = () => {
               })
             : !loading && (
                 <View className="flex items-center justify-center gap-4 py-20 max-w-sm self-center">
-                  <Text className="text-gray-500 text-base font-semibold">
+                  <Text className="text-gray-500 text-base font-semibold text-center">
                     Looks empty...
                   </Text>
-                  <Text className="text-gray-500 text-base font-semibold">
+                  <Text className="text-gray-500 text-base font-semibold text-center">
                     Capture a cassava first and see your records here!
                   </Text>
                 </View>
@@ -180,7 +185,10 @@ const Home = () => {
 
       {loading && <LoadingOverlay text="Retrieving data..." />}
 
-      <Nav currentScreen="home" />
+      {/* Add paddingBottom so Nav sits above system buttons */}
+      <View style={{ paddingBottom: insets.bottom || 10 }}>
+        <Nav currentScreen="home" />
+      </View>
     </SafeAreaView>
   );
 };

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "client",
-    "slug": "client",
+    "name": "SmartGrow",
+    "slug": "smartgrow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -44,6 +44,7 @@
       "eas": {
         "projectId": "1a39e5a2-338e-4eaf-a4ff-3888947addab"
       }
-    }
+    },
+    "owner": "orijrodadnem"
   }
 }

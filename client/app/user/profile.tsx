@@ -1,4 +1,7 @@
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import Nav from "@/components/nav";
 import {
   KeyboardAvoidingView,
@@ -18,6 +21,8 @@ import { useUsers } from "@/hooks/useUsers";
 import LoadingOverlay from "@/components/loadingOverlay";
 
 const Profile = () => {
+  const insets = useSafeAreaInsets();
+
   const [showPassword, setShowPassword] = useState(false);
   const { currentUser, updateUser } = useUsers();
   const [loading, setLoading] = useState(false);
@@ -174,7 +179,9 @@ const Profile = () => {
 
       {loading && <LoadingOverlay text="Saving Information..." />}
 
-      <Nav currentScreen="profile" />
+      <View style={{ paddingBottom: insets.bottom || 10 }}>
+        <Nav currentScreen="profile" />
+      </View>
     </SafeAreaView>
   );
 };

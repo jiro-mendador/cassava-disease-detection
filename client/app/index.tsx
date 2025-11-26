@@ -67,14 +67,14 @@ const Index = () => {
           />
 
           <View className="mb-16 flex gap-4">
-            <Text className="text-white text-4xl font-black text-center">
+            <Text className="text-white text-3xl font-black text-center">
               Helping Farmers
             </Text>
-            <Text className="text-white text-4xl font-black text-center">
-              Spot Health Issues Early
+            <Text className="text-white text-3xl font-black text-center">
+              Spot Cassava Health Issues
             </Text>
             <Text className="text-[#bded30] text-lg font-black text-center">
-              Cassava Crop Detection
+              SmartGrow
             </Text>
           </View>
 
@@ -86,9 +86,7 @@ const Index = () => {
               <Ionicons name="leaf" size={32} color="black" />
             </View>
             <View className="flex flex-row gap-2 items-center">
-              <Text className="text-white text-sm">
-                Start Your Cassava Crop Detection
-              </Text>
+              <Text className="text-white text-sm">Start Your SmartGrow Journey</Text>
               {/* Double Arrow */}
               <MaterialIcons name="double-arrow" size={20} color="white" />
             </View>

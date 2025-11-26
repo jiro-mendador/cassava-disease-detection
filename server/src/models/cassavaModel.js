@@ -29,6 +29,10 @@ const cassavaSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    recommendation: {
+      type: String,
+      default: "N/A",
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

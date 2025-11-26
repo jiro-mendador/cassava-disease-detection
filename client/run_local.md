@@ -12,3 +12,5 @@ npx expo start --localhost --android
 
 # exporting apk
 npx eas build -p android --profile preview
+
+# TODO COMMIT ALL CHANGES AND SEND LATEST APK FILE

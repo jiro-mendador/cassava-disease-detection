@@ -8,7 +8,7 @@ const addCassava = async (req, res) => {
   let image = null;
 
   try {
-    const { detectedType, user, actualType } = req.body;
+    const { detectedType, user, actualType, recommendation } = req.body;
     image = req.file;
 
     console.log("REQ BODY : ", req.body);
@@ -29,6 +29,7 @@ const addCassava = async (req, res) => {
     //   detectedType,
     //   user,
     //   image: image.filename,
+    // recommendation,
     // };
 
     // if (actualType) {
@@ -37,13 +38,24 @@ const addCassava = async (req, res) => {
 
     // ! TESTING PURPOSES ONLY
     let newCassava = {
-      detectedType: detectedType.toLowerCase() === "healthy" ? "Healthy" : detectedType === "N/A" ? "N/A" : "Unhealthy",
+      detectedType:
+        detectedType.toLowerCase() === "healthy"
+          ? "Healthy"
+          : detectedType === "N/A"
+          ? "N/A"
+          : "Unhealthy",
       user,
       image: image.filename,
+      recommendation,
     };
 
     if (actualType) {
-      newCassava.actualType = actualType.toLowerCase() === "healthy" ? "Healthy" : actualType === "N/A" ? "N/A" : "Unhealthy";
+      newCassava.actualType =
+        actualType.toLowerCase() === "healthy"
+          ? "Healthy"
+          : actualType === "N/A"
+          ? "N/A"
+          : "Unhealthy";
     }
     // ! END OF TESTING
 
@@ -163,7 +175,7 @@ const updateCassava = async (req, res) => {
   try {
     const cassavaId = req.params.id;
 
-    const { actualType, detectedType, user } = req.body;
+    const { actualType, detectedType, user, recommendation } = req.body;
 
     console.log("REQ BODY : ", req.body);
 
@@ -186,7 +198,7 @@ const updateCassava = async (req, res) => {
 
     const updatedCassava = await Cassava.findByIdAndUpdate(
       cassavaId,
-      { actualType, detectedType, user },
+      { actualType, detectedType, user, recommendation },
       {
         new: true,
         runValidators: true,

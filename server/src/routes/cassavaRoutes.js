@@ -8,7 +8,7 @@ import {
   updateCassava,
   deleteCassava,
 } from "../controllers/cassavaController.js";
-import { detect } from "../controllers/cassavaDetection.js";
+import { detect, analyzeCassava } from "../controllers/cassavaDetection.js";
 
 let cassavaRoutes = express.Router();
 
@@ -25,6 +25,7 @@ const upload = multer({ storage });
 
 cassavaRoutes.post("/", upload.single("image"), addCassava);
 cassavaRoutes.post("/detect", upload.single("image"), detect);
+cassavaRoutes.post("/analyze", analyzeCassava);
 
 cassavaRoutes.get("/:id", getCassava);
 cassavaRoutes.get("/", getCassavas);
